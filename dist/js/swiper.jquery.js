@@ -10,7 +10,7 @@
  * 
  * Licensed under MIT
  * 
- * Released on: March 10, 2017
+ * Released on: August 4, 2017
  */
 (function () {
     'use strict';
@@ -1272,6 +1272,8 @@
           Resize Handler
           ===========================*/
         s.onResize = function (forceUpdatePagination) {
+            if (s.container[0] && s.container[0].offsetWidth === 0) return;
+        
             if (s.params.onBeforeResize) s.params.onBeforeResize(s);
             //Breakpoints
             if (s.params.breakpoints) {
@@ -2511,6 +2513,7 @@
         s.effects = {
             fade: {
                 setTranslate: function () {
+                    var activeSlide = s.slides.eq(s.activeIndex)[0];
                     for (var i = 0; i < s.slides.length; i++) {
                         var slide = s.slides.eq(i);
                         var offset = slide[0].swiperSlideOffset;
@@ -2521,15 +2524,12 @@
                             ty = tx;
                             tx = 0;
                         }
-                        var slideOpacity = s.params.fade.crossFade ?
-                                Math.max(1 - Math.abs(slide[0].progress), 0) :
-                                1 + Math.min(Math.max(slide[0].progress, -1), 0);
-                        slide
-                            .css({
-                                opacity: slideOpacity
-                            })
-                            .transform('translate3d(' + tx + 'px, ' + ty + 'px, 0px)');
-        
+                        if (activeSlide !== slide[0]) {
+                            slide.css({opacity: 0});
+                        } else {
+                            slide.css({opacity: 1});
+                        }
+                        slide.transform('translate3d(' + tx + 'px, ' + ty + 'px, 0px)');
                     }
         
                 },
